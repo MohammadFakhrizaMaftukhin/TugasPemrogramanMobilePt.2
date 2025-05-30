@@ -5,7 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NameViewModel(application: Application) : AndroidViewModel(application) {
     // Mendapatkan instance DAO dari database
@@ -40,18 +42,30 @@ class NameViewModel(application: Application) : AndroidViewModel(application) {
         }
         
         viewModelScope.launch {
-            dao.insert(Name(name = name))
-            _successMessage.value = "Nama berhasil disimpan"
-            inputName.value = ""
-            _isSaveButtonEnabled.value = false
+            try {
+                withContext(Dispatchers.IO) {
+                    dao.insert(Name(name = name))
+                }
+                _successMessage.value = "Nama berhasil disimpan"
+                inputName.value = ""
+                _isSaveButtonEnabled.value = false
+            } catch (e: Exception) {
+                _successMessage.value = "Error: ${e.message}"
+            }
         }
     }
 
     // Fungsi untuk menghapus nama
     fun deleteName(name: Name) {
         viewModelScope.launch {
-            dao.delete(name)
-            _successMessage.value = "Nama berhasil dihapus"
+            try {
+                withContext(Dispatchers.IO) {
+                    dao.delete(name)
+                }
+                _successMessage.value = "Nama berhasil dihapus"
+            } catch (e: Exception) {
+                _successMessage.value = "Error: ${e.message}"
+            }
         }
     }
 }
