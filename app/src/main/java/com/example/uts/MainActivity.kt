@@ -30,19 +30,14 @@ class MainActivity : AppCompatActivity() {
         // Menghubungkan ViewModel dengan layout
         binding.viewModel = viewModel
 
-        // Initialize adapter with empty list and ViewModel
         adapter = NameAdapter(listOf(), viewModel)
-        // Mengatur layout manager untuk RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        // Mengatur adapter untuk RecyclerView
         binding.recyclerView.adapter = adapter
 
-        // Observe changes in the names list
         viewModel.allNames.observe(this) { names ->
             adapter.updateList(names)
         }
 
-        // Mengobservasi pesan sukses dari ViewModel
         viewModel.successMessage.observe(this) { message ->
             message?.let {
                 Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
